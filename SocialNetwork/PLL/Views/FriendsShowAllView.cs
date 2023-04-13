@@ -23,7 +23,7 @@ namespace SocialNetwork.PLL.Views
         {
             Console.WriteLine("ВАШИ ДРУЗЬЯ");
 
-            IEnumerable<Friend> friends = friendService.GetFriendsBuIserId(user.Id);
+            IEnumerable<Friend> friends = friendService.GetFriendsByIserId(user.Id);
 
             if (friends.Count() == 0)
             {

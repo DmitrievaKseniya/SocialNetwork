@@ -12,22 +12,22 @@ namespace SocialNetwork.BLL.Services
 {
     public class FriendService
     {
-        IUserRepository userRepository;
-        IFriendRepository friendRepository;
+        IUserRepository UserRepository;
+        IFriendRepository FriendRepository;
 
-        public FriendService() 
+        public FriendService(IFriendRepository friendRepository, IUserRepository userRepository) 
         {
-            userRepository = new UserRepository();
-            friendRepository = new FriendRepository();
+            UserRepository = userRepository;
+            FriendRepository = friendRepository;
         }
-        public IEnumerable<Friend> GetFriendsBuIserId(int userId)
+        public IEnumerable<Friend> GetFriendsByIserId(int userId)
         {
             var friends = new List<Friend>();
 
-            friendRepository.FindAllByUserId(userId).ToList().ForEach(f =>
+            FriendRepository.FindAllByUserId(userId).ToList().ForEach(f =>
             {
-                var userUserEntity = userRepository.FindById(f.user_id);
-                var friendUserEntity = userRepository.FindById(f.friend_id);
+                var userUserEntity = UserRepository.FindById(f.user_id);
+                var friendUserEntity = UserRepository.FindById(f.friend_id);
 
                 friends.Add(new Friend(f.id, userUserEntity.id, friendUserEntity.email, friendUserEntity.firstname));
             });
@@ -35,18 +35,18 @@ namespace SocialNetwork.BLL.Services
             return friends;
         }
 
-        public void CreateNewFriend(FriendAddNewData friendAddNewData)
+        public void CreateNewFriend(string friendEmail, int userId)
         {
-            var findUserEntity = this.userRepository.FindByEmail(friendAddNewData.FriendEmail);
+            var findUserEntity = this.UserRepository.FindByEmail(friendEmail);
             if (findUserEntity == null) throw new UserNotFoundException();
 
             var friendEntity = new FriendEntity()
             {
-                user_id = friendAddNewData.UserId,
+                user_id = userId,
                 friend_id = findUserEntity.id
             };
 
-            if (this.friendRepository.Create(friendEntity) == 0)
+            if (this.FriendRepository.Create(friendEntity) == 0)
                 throw new Exception();
         }
     }

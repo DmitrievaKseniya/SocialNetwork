@@ -1,4 +1,5 @@
-﻿using SocialNetwork.BLL.Exceptions;
+﻿using Microsoft.Extensions.Hosting;
+using SocialNetwork.BLL.Exceptions;
 using SocialNetwork.BLL.Models;
 using SocialNetwork.BLL.Services;
 using SocialNetwork.DAL.Repositories;
@@ -24,9 +25,13 @@ namespace SocialNetwork
         public static FriendsShowAllView friendsShowAllView;
         static void Main(string[] args)
         {
-            userService = new UserService();
-            messageService = new MessageService();
-            friendService = new FriendService();
+            IFriendRepository friendRepository = new FriendRepository();
+            IUserRepository userRepository = new UserRepository();
+            IMessageRepository messageRepository = new MessageRepository();
+
+            userService = new UserService(userRepository, messageRepository);
+            messageService = new MessageService(messageRepository, userRepository);
+            friendService = new FriendService(friendRepository, userRepository);
 
             mainView = new MainView();
             registrationView = new RegistrationView(userService);
